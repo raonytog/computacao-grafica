@@ -3,14 +3,16 @@
 #include <GL/glut.h>
 #include <stdio.h>
 
+#define WINDOW_SIZE 600
 #define WIDTH 1024
-#define HEIGHT 768
+#define HEIGHT 600
 
 #define JUMP 0.005
 
 float gX = 0;
 float gY = 0;
 int keyStatus[256];
+int mouseStatus = 0;
 
 void keyPress(unsigned char key, int x, int y) {
     if      (key == 'a') keyStatus[(int)'a'] = 1;
@@ -35,6 +37,26 @@ void idle(void) {
     else if (keyStatus[(int)('w')]) gY += JUMP;
     else if (keyStatus[(int)('s')]) gY -= JUMP;
     else if (keyStatus[(int)('d')]) gX += JUMP;
+
+    glutPostRedisplay();
+}
+
+void mouse(int button, int state, int x, int y) {
+    if (state == GLUT_DOWN) {
+        if (button == GLUT_LEFT_BUTTON) {
+            mouseStatus = 1;
+            gX = (float)x / WIDTH;
+            gY = (HEIGHT - (float)y) / HEIGHT;
+        }
+
+    } else mouseStatus = 0;
+}
+
+void motion(int x, int y) {
+    if (mouseStatus != 1) return;
+
+    gX = (float)x / WIDTH;
+    gY = (HEIGHT - (float)y) / HEIGHT;
 
     glutPostRedisplay();
 }
@@ -113,6 +135,8 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyPress);
     glutKeyboardUpFunc(keyUp);
     glutIdleFunc(idle);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
 
 
     glutMainLoop();
