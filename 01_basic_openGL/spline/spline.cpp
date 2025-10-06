@@ -2,14 +2,22 @@
 #include <GL/glu.h>
 #include <stdlib.h>
 #include <GL/glut.h>
+#include <cstdio>
+
 #define TAMANHO_JANELA 500
+#define WIDTH TAMANHO_JANELA*2
+#define HEIGHT TAMANHO_JANELA
 
 float size = 5.0;
+int mouseStatus = 0;
+int idx = 0;
 
 //Pontos de controle da Spline
 GLfloat ctrlpoints[4][3] = {
-        { -4.0, -4.0, 0.0}, { -2.0, 4.0, 0.0}, 
-        {2.0, -4.0, 0.0}, {4.0, 4.0, 0.0}};
+        {-4.0, -4.0, 0.0}, 
+        {-2.0,  4.0, 0.0}, 
+        { 2.0, -4.0, 0.0}, 
+        { 4.0,  4.0, 0.0}};
 
 void init(void) {
     glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -43,7 +51,7 @@ void display(void) {
     
     /* Desenha os pontos de controle. */
     glPointSize(5.0);
-    glColor3f(1.0, 1.0, 0.0);
+    glColor3f(1.0, 0.0, 1.0);
     glBegin(GL_POINTS);
         for (i = 0; i < 4; i++) 
             glVertex3fv(&ctrlpoints[i][0]);
@@ -73,15 +81,47 @@ void reshape(int w, int h) {
     glLoadIdentity();
 }
 
+void mouse(int button, int state, int x, int y) {
+    if (state == GLUT_DOWN) {
+        for(int i = 0; i < 4; i++) {
+            if (x >= ctrlpoints[i][0]-30 && 
+                x <= ctrlpoints[i][0]+30 && 
+                y >= ctrlpoints[i][1]-30 && 
+                y <= ctrlpoints[i][1]+30) 
+            {
+                if (button == GLUT_LEFT_BUTTON) {
+                    mouseStatus = 1;
+                    idx = i;
+                    ctrlpoints[i][0] = (float)x/WIDTH;
+                    ctrlpoints[i][1] = (float)y/HEIGHT;
+                    break;
+                }
+            }
+        }
+    } else mouseStatus = 0;
+}
+
+void motion(int x, int y) {
+    if (mouseStatus == 1) {
+        ctrlpoints[idx][0] = (float)x/WIDTH;
+        ctrlpoints[idx][1] = (float)y/HEIGHT;
+        glutPostRedisplay();
+    }
+}
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize (TAMANHO_JANELA, TAMANHO_JANELA);
-    glutInitWindowPosition (100, 100);
-    glutCreateWindow (argv[0]);
-    init ();
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(TAMANHO_JANELA*2, TAMANHO_JANELA);
+    glutInitWindowPosition(100, 100);
+    glutCreateWindow(argv[0]);
+    init();
+
     glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
+    glutMouseFunc(mouse);
+    glutMotionFunc(motion);
+    // glutReshapeFunc(reshape);
+
     glutMainLoop();
     return 0;
     }
