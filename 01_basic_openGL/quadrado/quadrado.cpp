@@ -43,12 +43,8 @@ void idle(void) {
 
 void mouse(int button, int state, int x, int y) {
     if (state == GLUT_DOWN) {
-        if (button == GLUT_LEFT_BUTTON) {
-            mouseStatus = 1;
-            gX = (float)x / WIDTH;
-            gY = (HEIGHT - (float)y) / HEIGHT;
-        }
-
+        if (button == GLUT_LEFT_BUTTON) mouseStatus = 1;
+        
     } else mouseStatus = 0;
 }
 
