@@ -38,14 +38,14 @@ void display(void) {
 
    /* Define cor dos vértices com os valores R, G e B variando de 0.0 a 1.0 */
    /* Desenhar um polígono branco (retângulo) */
-   glBegin(GL_POLYGON);
-      glColor3f (1.0, 0.0, 0.0);
-      glVertex3f (pRx, pRy, 0.0);
-      glColor3f (0.0, 1.0, 0.0);
-      glVertex3f (pGx, pGy, 0.0);
-      glColor3f (0.0, 0.0, 1.0);
-      glVertex3f (pBx, pBy, 0.0);
-   glEnd();
+    glBegin(GL_POLYGON);
+        glColor3f (1.0, 0.0, 0.0);
+        glVertex3f (pRx, pRy, 0.0);
+        glColor3f (0.0, 1.0, 0.0);
+        glVertex3f (pGx, pGy, 0.0);
+        glColor3f (0.0, 0.0, 1.0);
+        glVertex3f (pBx, pBy, 0.0);
+    glEnd();
 
    /* Desenha o ponto de clique. */
    glPointSize(5.0);
