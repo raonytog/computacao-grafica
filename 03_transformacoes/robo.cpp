@@ -41,11 +41,9 @@ void Robo::DesenhaBraco(GLfloat x, GLfloat y, GLfloat theta1, GLfloat theta2, GL
     glRotatef(theta1, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 0, 0, 1);
     
-
     glTranslatef(0, paddleHeight, 0);
     glRotatef(theta2, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 1, 1, 0);
-    
 
     glTranslatef(0, paddleHeight, 0);
     glRotatef(theta3, 0, 0, 1);
@@ -90,4 +88,19 @@ void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat &xOut, GLfloat &yO
 
 Tiro* Robo::Atira() {
 
+    GLfloat x = 0, y = 0;
+
+    // rotate t3
+    glTranslatef(0, paddleHeight, 0);
+
+    // rotate t2
+    glTranslatef(0, paddleHeight, 0);
+
+    // rotate t1
+    glTranslatef(0, baseHeight, 0);
+
+
+
+    Tiro *tiro = new Tiro(x, y, 0);
+    return tiro;
 }

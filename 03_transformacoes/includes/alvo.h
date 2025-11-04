@@ -24,6 +24,7 @@ public:
     };
     void Recria(GLfloat x, GLfloat y);
     bool Atingido(Tiro *tiro);
+    float DistPoints(GLfloat x1, GLfloat x2,GLfloat y1,GLfloat y2);
 };
 
 #endif	/* ALVO_H */

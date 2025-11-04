@@ -31,6 +31,7 @@ public:
     void Move();
     bool Valido();
     void GetPos(GLfloat &xOut, GLfloat &yOut) { xOut = gX; yOut = gY;};
+    float DistPoints(GLfloat x1, GLfloat x2,GLfloat y1,GLfloat y2);
 };
 
 #endif	/* TIRO_H */
