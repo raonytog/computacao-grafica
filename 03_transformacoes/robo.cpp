@@ -85,9 +85,62 @@ void Robo::MoveEmX(GLfloat dx) {
 
 //Funcao auxiliar de rotacao
 void RotatePoint(GLfloat x, GLfloat y, GLfloat angle, GLfloat &xOut, GLfloat &yOut) {
-
+    xOut = x * cos(angle) - y * sin(angle);
+    yOut = x * sin(angle) + y * cos(angle); 
 }
 
 Tiro* Robo::Atira() {
+    /** graus p radianos */
+    GLfloat conversao = M_PI / 180.0;
+    GLfloat rad1 = gTheta1 * conversao;
+    GLfloat rad2 = gTheta2 * conversao;
+    GLfloat rad3 = gTheta3 * conversao;
 
+    /**  Base da haste 3 */
+    GLfloat x_base = 0.0;
+    GLfloat y_base = 0.0;
+
+    /**  Ponta da haste 3 */
+    GLfloat x_tip = 0.0;
+    GLfloat y_tip = paddleHeight; 
+
+    /** refaz os ajustes  */
+    RotatePoint(x_tip, y_tip, rad3, x_tip, y_tip);
+
+    /** corrige alturas */
+    y_base += paddleHeight; y_tip += paddleHeight;
+
+
+    RotatePoint(x_base, y_base, rad2, x_base, y_base);
+    RotatePoint(x_tip, y_tip, rad2, x_tip, y_tip);
+
+    // Translação de paddleHeight em y (da base da haste 1 para a base da haste 2)
+    y_base += paddleHeight;
+    y_tip += paddleHeight;
+
+    // Rotação de gTheta1
+    RotatePoint(x_base, y_base, rad1, x_base, y_base);
+    RotatePoint(x_tip, y_tip, rad1, x_tip, y_tip);
+
+    // Translação de baseHeight em y (da base do robô para a base da haste 1)
+    y_base += baseHeight;
+    y_tip += baseHeight;
+
+    // Translação para a posição no mundo gX e gY
+    x_base += gX;
+    y_base += gY;
+    x_tip += gX;
+    y_tip += gY;
+
+    // 3. Calcula a direção (ângulo)
+    // DICA 3: Usar atan2
+    // O ângulo é o vetor da base da haste 3 até a ponta da haste 3
+    GLfloat angle_rad = atan2(y_tip - y_base, x_tip - x_base);
+    
+    // Converte de radianos para graus
+    GLfloat angle_deg = angle_rad * (180.0 / M_PI);
+
+    // 4. Cria o tiro
+    // A posição do tiro é a ponta da última haste
+    return new Tiro(x_tip, y_tip, angle_deg);
 }

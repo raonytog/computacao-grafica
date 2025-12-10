@@ -10,8 +10,8 @@ LINKING = -lglut -lGL -lGLU
 TARGET = *
 
 all:
-	$(CXX) $(CFLAGS) -o bin/out $(TARGET).cpp $(LINKING)
-	bin/out
+	$(CXX) $(CFLAGS) -o bin/main $(TARGET).cpp $(LINKING)
+	bin/main
 
 clean:
 	$(RM) $(TARGET)
