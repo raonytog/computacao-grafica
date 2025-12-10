@@ -41,11 +41,9 @@ void Robo::DesenhaBraco(GLfloat x, GLfloat y, GLfloat theta1, GLfloat theta2, GL
     glRotatef(theta1, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 0, 0, 1);
     
-
     glTranslatef(0, paddleHeight, 0);
     glRotatef(theta2, 0, 0, 1);
     DesenhaRect(paddleHeight, paddleWidth, 1, 1, 0);
-    
 
     glTranslatef(0, paddleHeight, 0);
     glRotatef(theta3, 0, 0, 1);
@@ -96,6 +94,7 @@ Tiro* Robo::Atira() {
     GLfloat rad2 = gTheta2 * conversao;
     GLfloat rad3 = gTheta3 * conversao;
 
+<<<<<<< HEAD
     /**  Base da haste 3 */
     GLfloat x_base = 0.0;
     GLfloat y_base = 0.0;
@@ -143,4 +142,21 @@ Tiro* Robo::Atira() {
     // 4. Cria o tiro
     // A posição do tiro é a ponta da última haste
     return new Tiro(x_tip, y_tip, angle_deg);
+=======
+    GLfloat x = 0, y = 0;
+
+    // rotate t3
+    glTranslatef(0, paddleHeight, 0);
+
+    // rotate t2
+    glTranslatef(0, paddleHeight, 0);
+
+    // rotate t1
+    glTranslatef(0, baseHeight, 0);
+
+
+
+    Tiro *tiro = new Tiro(x, y, 0);
+    return tiro;
+>>>>>>> 763e5976a8f4acc49e3bae5f51bc3434d5637790
 }
