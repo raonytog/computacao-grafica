@@ -171,10 +171,9 @@ void DrawAxes(double size) {
 
 //ALTERE AQUI - SEU CODIGO AQUI
 //Usar meshlab para obter os pontos abaixo
-// int pontoArmaAponta = 690;
-int pontoArmaAponta = 5315;
+int pontoArmaAponta = 690;
 int pontoPosicaoArma = 3857;
-int up[3] = {0, -1, 0};
+int up[3] = {0, 1, 0};
 void desenhaJogador() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
