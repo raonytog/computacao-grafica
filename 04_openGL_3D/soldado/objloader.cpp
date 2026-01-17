@@ -10,7 +10,7 @@
 using namespace std;
 
 //função para carregar o OBJ
-bool mesh::loadMesh(string path){
+bool mesh::loadMesh(string path) {
     vector<int> vertIndex, uvIndex, normIndex;//indexadores para vertices, mapeamento de textura e normais
     vertsPos.clear();
     vertsNorm.clear();
@@ -84,7 +84,7 @@ bool mesh::loadMesh(string path){
 }
 
 //desenha a malha
-void mesh::draw(){
+void mesh::draw() {
     int cont=0;
     GLfloat materialEmission[] = { 0.10, 0.10, 0.10, 1};
     GLfloat materialColorA[] = { 0.1, 0.1, 0.1, 0.1};

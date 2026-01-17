@@ -28,8 +28,7 @@ int lastY = 0;
 int buttonDown=0;
 int soldado_orig = 1;
 
-void init ()
-{
+void init () {
     glShadeModel (GL_SMOOTH);
     glEnable(GL_LIGHTING);  
     glEnable(GL_LIGHT0);
@@ -41,8 +40,7 @@ void init ()
     arma.loadMesh("Blender/armanova1.obj");
 }
 
-void reshape (int w, int h)
-{
+void reshape (int w, int h) {
     //Ajusta o tamanho da tela com a janela de visualizacao
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode (GL_PROJECTION);
@@ -56,20 +54,24 @@ void reshape (int w, int h)
 }
 
 //Funcao auxiliar para normalizar um vetor a/|a|
-void normalize(float a[3])
-{
-    double norm = sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]); 
+void normalize(float a[3]) {
+    double norm = sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]); 
     a[0] /= norm;
     a[1] /= norm;
     a[2] /= norm;
 }
 
 //Funcao auxiliar para fazer o produto vetorial entre dois vetores a x b = out
-void cross(float a[3], float b[3], float out[3])
-{
+void cross(float a[3], float b[3], float out[3]) {
     out[0] = a[1]*b[2] - a[2]*b[1];
     out[1] = a[2]*b[0] - a[0]*b[2];
     out[2] = a[0]*b[1] - a[1]*b[0];
+}
+
+void sub(float a[3], float b[3], float out[3]) {
+    out[0] = a[0]-b[0];
+    out[1] = a[1]-b[1];
+    out[2] = a[2]-b[2];
 }
 
 //Aplica a transformacao que coloca o sistema de coordendas local em uma posicao 
@@ -79,23 +81,54 @@ void cross(float a[3], float b[3], float out[3])
 //A matriz de transformacao no opengl eh armazanada transposta: 
 //m[4][4] = {Xx, Xy, Xz, 0.0, Yx, Yy, Yz, 0.0, Zx, Zy, Zz, 0.0, Tx, Ty, Tz, 1.0}
 void ChangeCoordSys(
-        GLdouble ax, GLdouble ay, GLdouble az, 
-        GLdouble bx, GLdouble by, GLdouble bz, 
-        GLdouble upx, GLdouble upy, GLdouble upz)
-{
+        GLdouble ax, GLdouble ay, GLdouble az,      // onde aponta      (p2)
+        GLdouble bx, GLdouble by, GLdouble bz,      // onde esta        (p1)
+        GLdouble upx, GLdouble upy, GLdouble upz) { // orientacao do up (p3)
     float x[3], y[3], z[3];
-    GLfloat m[4][4] = { 1,0,0,0,
-                        0,1,0,0,
-                        0,0,1,0,
-                        0,0,0,1};
+    GLfloat m[16];
 
-	//COLOQUE SEU CODIGO AQUI
+    float a[]  = {ax,  ay,  az };
+    float b[]  = {bx,  by,  bz };
+    float up[] = {upx, upy, upz};
+
+    /** X
+     *   p2-p1 
+     * ----------
+     *||(p2-p1)||
+     */
+    sub(a, b, x);
+    normalize(x);
+ 
+    /** Z
+     *  x <*> (p3-p1) 
+     * ----------------
+     * ||(x <*> (p3-p1))||
+     */
+    // sub(up, b, z);
+    cross(x, up, z);
+    normalize(z);
+
+    /** Y
+     * z <*> x
+     */
+    cross(z, x, y);
+
+    // coluna 1: x
+    m[0] = x[0];  m[1] = x[1];  m[2] = x[2];  m[3] = 0;
     
-    glMultMatrixf(&m[0][0]);
+    // coluna 2: y
+    m[4] = y[0];  m[5] = y[1];  m[6] = y[2];  m[7] = 0;
+    
+    // coluna 3: z
+    m[8] = z[0];  m[9] = z[1];  m[10] = z[2]; m[11] = 0;
+    
+    // coluna 4: Translação (Origem do novo sistema)
+    m[12] = bx;   m[13] = by;   m[14] = bz;   m[15] = 1;
+
+    glMultMatrixf(&m[0]);
 }
 
-void DrawAxes(double size)
-{
+void DrawAxes(double size) {
     GLfloat mat_ambient_r[] = { 1.0, 0.0, 0.0, 1.0 };
     GLfloat mat_ambient_g[] = { 0.0, 1.0, 0.0, 1.0 };
     GLfloat mat_ambient_b[] = { 0.0, 0.0, 1.0, 1.0 };
@@ -138,10 +171,11 @@ void DrawAxes(double size)
 
 //ALTERE AQUI - SEU CODIGO AQUI
 //Usar meshlab para obter os pontos abaixo
-int pontoArmaAponta = 0;
-int pontoPosicaoArma = 0;
-int up[3] = {0, 0, 0};
-void desenhaJogador(){
+// int pontoArmaAponta = 690;
+int pontoArmaAponta = 5315;
+int pontoPosicaoArma = 3857;
+int up[3] = {0, -1, 0};
+void desenhaJogador() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
         //Translada para o centro do soldado para facilitar a rotacao da camera
@@ -167,8 +201,13 @@ void desenhaJogador(){
         
         if (coordsysToggle == 1)
             DrawAxes(10);
-        if (armaToggle == 1)
-            arma.draw();
+
+        if (armaToggle == 1) {
+            glPushMatrix();
+                // glRotatef(90, 0, 1, 0);
+                arma.draw();
+            glPopMatrix();
+        }
     glPopMatrix();
 }
 
@@ -194,8 +233,7 @@ void MygluLookAt(
 
 }
 
-void display(void)
-{
+void display(void) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     //Controla camera
@@ -237,8 +275,7 @@ void display(void)
     glutSwapBuffers ();
 }
 
-void keyPress(unsigned char key, int x, int y)
-{
+void keyPress(unsigned char key, int x, int y) {
     switch(key){
     case '1':
         transformacaoArmaToggle = 1;
@@ -270,7 +307,7 @@ void keyPress(unsigned char key, int x, int y)
     glutPostRedisplay();
 }
 
-void mouse(int button, int state, int x, int y){
+void mouse(int button, int state, int x, int y) {
     if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
         lastX = x;
         lastY = y;
@@ -282,8 +319,7 @@ void mouse(int button, int state, int x, int y){
     glutPostRedisplay();
 }
 
-void mouse_motion(int x, int y)
-{
+void mouse_motion(int x, int y) {
     if (!buttonDown)
         return;
     
@@ -295,8 +331,7 @@ void mouse_motion(int x, int y)
     glutPostRedisplay();
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize (700,700);
