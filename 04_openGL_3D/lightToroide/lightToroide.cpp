@@ -4,19 +4,18 @@
 
 double spin = 0;
 
-void init(void) 
-{
+void init(void) {
    glClearColor (0.0, 0.0, 0.0, 0.0);
    glShadeModel (GL_SMOOTH);
-//   glShadeModel (GL_FLAT);
+   // glShadeModel (GL_FLAT);
    glEnable(GL_LIGHTING);
    glEnable(GL_LIGHT0);
    glEnable(GL_DEPTH_TEST);
 }
 
-void display(void)
-{
+void display(void) {
    GLfloat position[] = { 0.0, 0.00, 0.0, 1.0 };
+   GLfloat color[] = { 0.0, 1, 1, 1 };
 
    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glPushMatrix ();
@@ -26,10 +25,11 @@ void display(void)
             glRotated ((GLdouble) spin, 0.0, 0.0, 1.0);
             glTranslatef (0.0, 1.0, 1.5);
             glLightfv (GL_LIGHT0, GL_POSITION, position);
+            glLightfv (GL_LIGHT0, GL_AMBIENT, color);
 
             glDisable (GL_LIGHTING);
             glColor3f (0.0, 1.0, 1.0);
-            glutWireCube (0.1);
+            glutWireCube (0.25);
             glEnable (GL_LIGHTING);
         glPopMatrix ();
 
@@ -38,8 +38,7 @@ void display(void)
    glFlush ();
 }
 
-void reshape (int w, int h)
-{
+void reshape (int w, int h) {
    glViewport (0, 0, (GLsizei) w, (GLsizei) h);
    glMatrixMode (GL_PROJECTION);
    glLoadIdentity();
@@ -48,29 +47,27 @@ void reshape (int w, int h)
    glLoadIdentity();
 }
 
-void idle()
-{
-    static GLdouble previousTime = 0;
-    GLdouble currentTime;
-    GLdouble timeDiference;
-    int spinInt;
-    double spinDbl;
-    double speed = 0.1;
-    
-    // Elapsed time from the initiation of the game.
-    currentTime = glutGet(GLUT_ELAPSED_TIME);
-    timeDiference = currentTime - previousTime; // Elapsed time from the previous frame.
-    previousTime = currentTime; //Update previous time
+void idle() {
+   static GLdouble previousTime = 0;
+   GLdouble currentTime;
+   GLdouble timeDiference;
+   int spinInt;
+   double spinDbl;
+   double speed = 0.1;
+   
+   // Elapsed time from the initiation of the game.
+   currentTime = glutGet(GLUT_ELAPSED_TIME);
+   timeDiference = currentTime - previousTime; // Elapsed time from the previous frame.
+   previousTime = currentTime; //Update previous time
 
-    spinDbl = spin + speed*timeDiference;
-    spinInt = (int)(spin + speed*timeDiference); 
-    spin = spinInt%360 + (spinDbl-(int)spinInt);
-    
-    glutPostRedisplay();
+   spinDbl = spin + speed*timeDiference;
+   spinInt = (int)(spin + speed*timeDiference); 
+   spin = spinInt%360 + (spinDbl-(int)spinInt);
+   
+   glutPostRedisplay();
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
    glutInit(&argc, argv);
    glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
    glutInitWindowSize (500, 500); 
