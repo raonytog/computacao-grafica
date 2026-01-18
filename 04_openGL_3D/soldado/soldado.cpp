@@ -30,7 +30,7 @@ int soldado_orig = 1;
 
 void init () {
     glShadeModel (GL_SMOOTH);
-    glEnable(GL_LIGHTING);  
+    glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
     
@@ -45,10 +45,10 @@ void reshape (int w, int h) {
     glViewport (0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode (GL_PROJECTION);
     glLoadIdentity();
-    if (w <= h)
-        gluPerspective (45, (GLfloat)h/(GLfloat)w, 1, 1000);
-    else
-        gluPerspective (45, (GLfloat)w/(GLfloat)h, 1, 1000);
+
+    if (w <= h) gluPerspective (45, (GLfloat)h/(GLfloat)w, 1, 1000);
+    else        gluPerspective (45, (GLfloat)w/(GLfloat)h, 1, 1000);
+
     glMatrixMode(GL_MODELVIEW);
     glutPostRedisplay();
 }
@@ -213,26 +213,69 @@ void desenhaJogador() {
     glPopMatrix();
 }
 
-//Aplica a transformacao que modifica o mundo virtual para deixa-lo como se
-//tivesse sendo visto da posicao determinada por eye (eyex, eyey, eyez)
-//olhando para center (centerx, centery, centerz)
-//e orientada em torno do vetor direcional por up (upx, upy, upz)
+// Aplica a transformacao que modifica o mundo virtual para deixa-lo como se
+// tivesse sendo visto da posicao determinada por eye (eyex, eyey, eyez) p1
+// olhando para center (centerx, centery, centerz) p2
+//e orientada em torno do vetor direcional por up (upx, upy, upz) p3
 //A matriz de transformacao no opengl eh armazanada transposta: 
 //m[4][4] = {Xx, Xy, Xz, 0.0, Yx, Yy, Yz, 0.0, Zx, Zy, Zz, 0.0, Tx, Ty, Tz, 1.0}
+// Implementação correta de uma View Matrix (Câmera)
 void MygluLookAt(
         GLdouble eyex, GLdouble eyey, GLdouble eyez, 
         GLdouble centerx, GLdouble centery, GLdouble centerz, 
         GLdouble upx, GLdouble upy, GLdouble upz)
 {
     float forward[3], side[3], up[3];
-    //column-major order
-    GLfloat m[4][4] = { 1,0,0,0,
-                        0,1,0,0,
-                        0,0,1,0,
-                        0,0,0,1};
+    GLfloat m[16];
 
-	//COLOQUE SEU CODIGO AQUI
+    // 1. Calcular vetor Forward (Z da Câmera)
+    // Nota: Em OpenGL, a câmera aponta para -Z, então o vetor "Forward" positivo
+    // aponta do "center" para o "eye" (para trás).
+    forward[0] = eyex - centerx;
+    forward[1] = eyey - centery;
+    forward[2] = eyez - centerz;
+    normalize(forward);
 
+    // 2. Calcular vetor Side (X da Câmera)
+    // Side = Up x Forward
+    float upVec[] = { (float)upx, (float)upy, (float)upz };
+    cross(upVec, forward, side);
+    normalize(side);
+
+    // 3. Recalcular vetor Up verdadeiro (Y da Câmera)
+    // Up = Forward x Side
+    cross(forward, side, up);
+
+    // 4. Montar a Matriz de Visualização
+    // A matriz LookAt é composta por uma Rotação (os eixos calculados)
+    // multiplicada por uma Translação (-eye).
+    
+    // Coluna 1 (Eixo X - Side)
+    m[0] = side[0];
+    m[1] = up[0];
+    m[2] = forward[0];
+    m[3] = 0;
+
+    // Coluna 2 (Eixo Y - Up)
+    m[4] = side[1];
+    m[5] = up[1];
+    m[6] = forward[1];
+    m[7] = 0;
+
+    // Coluna 3 (Eixo Z - Forward)
+    m[8] = side[2];
+    m[9] = up[2];
+    m[10] = forward[2];
+    m[11] = 0;
+
+    // Coluna 4 (Translação projetada)
+    // É o produto escalar negativo entre os eixos e a posição do olho
+    m[12] = -(side[0]*eyex + side[1]*eyey + side[2]*eyez);
+    m[13] = -(up[0]*eyex    + up[1]*eyey    + up[2]*eyez);
+    m[14] = -(forward[0]*eyex + forward[1]*eyey + forward[2]*eyez);
+    m[15] = 1;
+
+    glMultMatrixf(m);
 }
 
 void display(void) {
