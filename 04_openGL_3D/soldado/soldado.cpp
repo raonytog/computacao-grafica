@@ -115,6 +115,7 @@ void ChangeCoordSys(
 
     // coluna 1: x
     m[0] = x[0];  m[1] = x[1];  m[2] = x[2];  m[3] = 0;
+    // m[0] = 0;  m[1] = 0;  m[2] = 0;  m[3] = 0;
     
     // coluna 2: y
     m[4] = y[0];  m[5] = y[1];  m[6] = y[2];  m[7] = 0;
@@ -182,15 +183,14 @@ void desenhaJogador() {
 
         if (soldado_orig){
             soldado.draw();
-
             if (transformacaoArmaToggle == 2){
                 ChangeCoordSys( soldado.vertsPos[pontoArmaAponta].x, soldado.vertsPos[pontoArmaAponta].y, soldado.vertsPos[pontoArmaAponta].z,
                                 soldado.vertsPos[pontoPosicaoArma].x, soldado.vertsPos[pontoPosicaoArma].y, soldado.vertsPos[pontoPosicaoArma].z,
                                 up[0], up[1], up[2]);
-            } 
+            }
+
         } else {
             soldado_transf.draw();
-
             if (transformacaoArmaToggle == 2){
                 ChangeCoordSys( soldado_transf.vertsPos[pontoArmaAponta].x, soldado_transf.vertsPos[pontoArmaAponta].y, soldado_transf.vertsPos[pontoArmaAponta].z,
                                 soldado_transf.vertsPos[pontoPosicaoArma].x, soldado_transf.vertsPos[pontoPosicaoArma].y, soldado_transf.vertsPos[pontoPosicaoArma].z,
@@ -203,9 +203,12 @@ void desenhaJogador() {
 
         if (armaToggle == 1) {
             glPushMatrix();
-                // glRotatef(90, 0, 1, 0);
+                glRotatef(90, 0,1,0);
+                glRotatef(-50, 1,0,0);
+                glRotatef(45, 0,0,1);
                 arma.draw();
             glPopMatrix();
+
         }
     glPopMatrix();
 }
