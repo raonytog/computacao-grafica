@@ -228,41 +228,43 @@ void MygluLookAt(
     float forward[3], side[3], up[3];
     GLfloat m[16];
 
-    // 1. Calcular vetor Forward (Z da Câmera)
     // Nota: Em OpenGL, a câmera aponta para -Z, então o vetor "Forward" positivo
     // aponta do "center" para o "eye" (para trás).
+    /** Z
+     * eye - center
+     */
     forward[0] = eyex - centerx;
     forward[1] = eyey - centery;
     forward[2] = eyez - centerz;
     normalize(forward);
 
-    // 2. Calcular vetor Side (X da Câmera)
-    // Side = Up x Forward
+    /** X
+     *    up <*> forward
+     * --------------------
+     * || up <*> forward ||
+     */
     float upVec[] = { (float)upx, (float)upy, (float)upz };
     cross(upVec, forward, side);
     normalize(side);
 
-    // 3. Recalcular vetor Up verdadeiro (Y da Câmera)
-    // Up = Forward x Side
+    /** Y
+     * forward x side
+     */
     cross(forward, side, up);
-
-    // 4. Montar a Matriz de Visualização
-    // A matriz LookAt é composta por uma Rotação (os eixos calculados)
-    // multiplicada por uma Translação (-eye).
     
-    // Coluna 1 (Eixo X - Side)
+    // coluna x
     m[0] = side[0];
     m[1] = up[0];
     m[2] = forward[0];
     m[3] = 0;
 
-    // Coluna 2 (Eixo Y - Up)
+    // coluna y
     m[4] = side[1];
     m[5] = up[1];
     m[6] = forward[1];
     m[7] = 0;
 
-    // Coluna 3 (Eixo Z - Forward)
+    // coluna z
     m[8] = side[2];
     m[9] = up[2];
     m[10] = forward[2];
